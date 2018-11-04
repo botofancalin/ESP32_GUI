@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "demo.h": "c",
+        "lvgl.h": "c",
+        "esp_freertos_hooks.h": "c"
+    }
+}
