@@ -10,7 +10,8 @@ COMPONENT_SRCDIRS := . \
 	lv_objx \
 	lv_hal \
 	lv_misc \
-	lv_misc/lv_fonts \
+	lv_misc \
+	lv_fonts \
 	lv_themes
 	
 COMPONENT_ADD_INCLUDEDIRS := $(COMPONENT_SRCDIRS) ..
