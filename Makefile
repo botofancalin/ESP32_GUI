@@ -3,19 +3,10 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := esp32_LVL
+PROJECT_NAME := esp32_gui
 
-COMPONENT_ADD_INCLUDEDIRS := components/
-INC_DIR = include
-DEPS = $(INC_DIR)/lv_conf.h
-
+#If SOLUTION_PATH is not defined, use relative path as default value
+IOT_SOLUTION_PATH ?= $(abspath $(shell pwd)/)
+ 
+include $(IOT_SOLUTION_PATH)/components/component_conf.mk
 include $(IDF_PATH)/make/project.mk
-
-# Copy some defaults into the sdkconfig by default
-# so BT stack is enabled
-EXTRA_COMPONENT_DIRS:=$(b)components
-sdkconfig: sdkconfig.defaults
-	$(Q) cp $< $@
-
-menuconfig: sdkconfig
-defconfig: sdkconfig
