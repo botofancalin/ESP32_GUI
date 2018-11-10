@@ -27,6 +27,8 @@
 #define LV_MEM_CUSTOM_FREE    free         /*Wrapper to free*/
 #endif     /*LV_MEM_CUSTOM*/
 
+#define LV_USE_DMA		1
+
 /*===================
    Graphical settings
  *===================*/

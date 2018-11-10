@@ -192,17 +192,21 @@ bool lv_roller_get_hor_fit(const lv_obj_t * roller)
  *  */
 lv_style_t * lv_roller_get_style(const lv_obj_t * roller, lv_roller_style_t type)
 {
+    lv_style_t * style = NULL;
+
     switch(type) {
         case LV_ROLLER_STYLE_BG:
-            return lv_obj_get_style(roller);
+            style = lv_obj_get_style(roller);
+            break;
         case LV_ROLLER_STYLE_SEL:
-            return lv_ddlist_get_style(roller, LV_DDLIST_STYLE_SEL);
+            style = lv_ddlist_get_style(roller, LV_DDLIST_STYLE_SEL);
+            break;
         default:
-            return NULL;
+            style = NULL;
+            break;
     }
 
-    /*To avoid warning*/
-    return NULL;
+    return style;
 }
 
 /**********************
@@ -359,12 +363,14 @@ static lv_res_t lv_roller_signal(lv_obj_t * roller, lv_signal_t sign, void * par
             }
         } else if(c == LV_GROUP_KEY_ENTER) {
             ext->ddlist.sel_opt_id_ori = ext->ddlist.sel_opt_id;        /*Set the entered value as default*/
-            if(ext->ddlist.action) ext->ddlist.action(roller);
+            if(ext->ddlist.action) res = ext->ddlist.action(roller);
 #if USE_LV_GROUP
-            lv_group_t * g = lv_obj_get_group(roller);
-            bool editing = lv_group_get_editing(g);
+            if(res == LV_RES_OK) {
+                lv_group_t * g = lv_obj_get_group(roller);
+                bool editing = lv_group_get_editing(g);
 
-            if(editing) lv_group_set_editing(g, false);     /*In edit mode go to navigate mode if an option is selected*/
+                if(editing) lv_group_set_editing(g, false);     /*In edit mode go to navigate mode if an option is selected*/
+            }
 #endif
         }
     } else if(sign == LV_SIGNAL_GET_TYPE) {
@@ -414,7 +420,8 @@ static lv_res_t lv_roller_scrl_signal(lv_obj_t * roller_scrl, lv_signal_t sign, 
         if(id < 0) id = 0;
         if(id >= ext->ddlist.option_cnt) id = ext->ddlist.option_cnt - 1;
         ext->ddlist.sel_opt_id = id;
-        if(ext->ddlist.action) ext->ddlist.action(roller);
+        ext->ddlist.sel_opt_id_ori = id;
+        if(ext->ddlist.action) res = ext->ddlist.action(roller);
     } else if(sign == LV_SIGNAL_RELEASED) {
         /*If picked an option by clicking then set it*/
         if(!lv_indev_is_dragging(indev)) {
@@ -425,12 +432,13 @@ static lv_res_t lv_roller_scrl_signal(lv_obj_t * roller_scrl, lv_signal_t sign, 
             if(id < 0) id = 0;
             if(id >= ext->ddlist.option_cnt) id = ext->ddlist.option_cnt - 1;
             ext->ddlist.sel_opt_id = id;
-            if(ext->ddlist.action) ext->ddlist.action(roller);
+            ext->ddlist.sel_opt_id_ori = id;
+            if(ext->ddlist.action) res = ext->ddlist.action(roller);
         }
     }
 
     /*Position the scrollable according to the new selected option*/
-    if(id != -1) {
+    if(id != -1 && res == LV_RES_OK) {
         refr_position(roller, true);
     }
 
@@ -503,8 +511,10 @@ static void refr_position(lv_obj_t * roller, bool anim_en)
 #if USE_LV_ANIMATION == 0
     anim_en = false;
 #endif
-    lv_obj_t * roller_scrl = lv_page_get_scrl(roller);
     lv_roller_ext_t * ext = lv_obj_get_ext_attr(roller);
+    if(ext->ddlist.label == NULL) return;	/*Probably the roller is being deleted if the label is NULL.*/
+
+    lv_obj_t * roller_scrl = lv_page_get_scrl(roller);
     lv_style_t * style_label = lv_obj_get_style(ext->ddlist.label);
     const lv_font_t * font = style_label->text.font;
     lv_coord_t font_h = lv_font_get_height(font);

@@ -79,6 +79,12 @@ void lv_vdb_set_adr(void * buf1, void * buf2);
  */
 void lv_flush_ready(void);
 
+
+/**
+ * Init the DMA buffer for image
+ */
+void vdb_init();
+
 /**********************
  *      MACROS
  **********************/

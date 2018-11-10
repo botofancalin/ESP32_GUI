@@ -49,7 +49,7 @@ enum {
     LV_CURSOR_BLOCK,
     LV_CURSOR_OUTLINE,
     LV_CURSOR_UNDERLINE,
-    LV_CURSOR_HIDDEN = 0x10,    /*Or it to any value to hide the cursor temporally*/
+    LV_CURSOR_HIDDEN = 0x08,    /*Or it to any value to hide the cursor temporally*/
 };
 typedef uint8_t lv_cursor_type_t;
 
@@ -68,7 +68,7 @@ typedef struct
         lv_style_t *style;      /*Style of the cursor (NULL to use label's style)*/
         lv_coord_t valid_x;         /*Used when stepping up/down in text area when stepping to a shorter line. (Handled by the library)*/
         uint16_t pos;           /*The current cursor position (0: before 1. letter; 1: before 2. letter etc.)*/
-        lv_cursor_type_t type:2;  /*Shape of the cursor*/
+        lv_cursor_type_t type:4;  /*Shape of the cursor*/
         uint8_t state :1;       /*Indicates that the cursor is visible now or not (Handled by the library)*/
     } cursor;
 } lv_ta_ext_t;
@@ -204,6 +204,16 @@ static inline void lv_ta_set_sb_mode(lv_obj_t * ta, lv_sb_mode_t mode)
 }
 
 /**
+ * Enable the scroll propagation feature. If enabled then the Text area will move its parent if there is no more space to scroll.
+ * @param ta pointer to a Text area
+ * @param en true or false to enable/disable scroll propagation
+ */
+static inline void lv_ta_set_scroll_propagation(lv_obj_t * ta, bool en)
+{
+    lv_page_set_scroll_propagation(ta, en);
+}
+
+/**
  * Set a style of a text area
  * @param ta pointer to a text area object
  * @param type which style should be set
@@ -296,6 +306,16 @@ static inline lv_action_t lv_ta_get_action(lv_obj_t * ta)
 static inline lv_sb_mode_t lv_ta_get_sb_mode(const lv_obj_t * ta)
 {
     return lv_page_get_sb_mode(ta);
+}
+
+/**
+ * Get the scroll propagation property
+ * @param ta pointer to a Text area
+ * @return true or false
+ */
+static inline bool lv_ta_get_scroll_propagation(lv_obj_t * ta)
+{
+    return lv_page_get_scroll_propagation(ta);
 }
 
 /**

@@ -778,6 +778,10 @@ void lv_obj_report_style_mod(lv_style_t * style)
 {
     lv_obj_t * i;
     LL_READ(scr_ll, i) {
+        if(i->style_p == style || style == NULL) {
+            lv_obj_refresh_style(i);
+        }
+
         report_style_mod_core(style, i);
     }
 }
@@ -1133,13 +1137,15 @@ lv_obj_t * lv_obj_get_parent(const lv_obj_t * obj)
  */
 lv_obj_t * lv_obj_get_child(const lv_obj_t * obj, const lv_obj_t * child)
 {
+    lv_obj_t * result = NULL;
+
     if(child == NULL) {
-        return lv_ll_get_head(&obj->child_ll);
+        result = lv_ll_get_head(&obj->child_ll);
     } else {
-        return lv_ll_get_next(&obj->child_ll, child);
+        result = lv_ll_get_next(&obj->child_ll, child);
     }
 
-    return NULL;
+    return result;
 }
 
 /**
@@ -1151,13 +1157,15 @@ lv_obj_t * lv_obj_get_child(const lv_obj_t * obj, const lv_obj_t * child)
  */
 lv_obj_t * lv_obj_get_child_back(const lv_obj_t * obj, const lv_obj_t * child)
 {
+    lv_obj_t * result = NULL;
+
     if(child == NULL) {
-        return lv_ll_get_tail(&obj->child_ll);
+        result = lv_ll_get_tail(&obj->child_ll);
     } else {
-        return lv_ll_get_prev(&obj->child_ll, child);
+        result = lv_ll_get_prev(&obj->child_ll, child);
     }
 
-    return NULL;
+    return result;
 }
 
 /**

@@ -90,6 +90,7 @@ lv_obj_t * lv_list_create(lv_obj_t * par, const lv_obj_t * copy)
     ext->styles_btn[LV_BTN_STATE_INA] = &lv_style_btn_ina;
     ext->anim_time = LV_LIST_FOCUS_TIME;
 #if USE_LV_GROUP
+    ext->last_sel = NULL;
     ext->selected_btn = NULL;
 #endif
 
@@ -156,6 +157,8 @@ void lv_list_clean(lv_obj_t * obj)
 {
     lv_obj_t * scrl = lv_page_get_scrl(obj);
     lv_obj_clean(scrl);
+    lv_list_ext_t * ext = lv_obj_get_ext_attr(obj);
+    ext->size = 0;
 }
 
 /*======================
@@ -174,7 +177,7 @@ lv_obj_t * lv_list_add(lv_obj_t * list, const void * img_src, const char * txt, 
 {
     lv_style_t * style = lv_obj_get_style(list);
     lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
-
+    ext->size ++;
     /*Create a list element with the image an the text*/
     lv_obj_t * liste;
     liste = lv_btn_create(list, NULL);
@@ -223,6 +226,30 @@ lv_obj_t * lv_list_add(lv_obj_t * list, const void * img_src, const char * txt, 
     }
 
     return liste;
+}
+
+/**
+ * Remove the index of the button in the list
+ * @param list pointer to a list object
+ * @param index pointer to a the button's index in the list, index must be 0 <= index < lv_list_ext_t.size
+ * @return true: successfully deleted
+ */
+bool lv_list_remove(const lv_obj_t * list, uint32_t index)
+{
+	lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
+	if(index >= ext->size) return false;
+	uint32_t count = 0;
+	lv_obj_t * e = lv_list_get_next_btn(list, NULL);
+	while(e != NULL) {
+		if(count == index) {
+			lv_obj_del(e);
+			ext->size --;
+			return true;
+		}
+        e = lv_list_get_next_btn(list, e);
+		count ++;
+	}
+	return false;
 }
 
 /*=====================
@@ -408,7 +435,7 @@ lv_obj_t * lv_list_get_prev_btn(const lv_obj_t * list, lv_obj_t * prev_btn)
     if(btn == NULL) return NULL;
 
     while(btn->signal_func != lv_list_btn_signal) {
-        btn = lv_obj_get_child(scrl, prev_btn);
+        btn = lv_obj_get_child(scrl, btn);
         if(btn == NULL) break;
     }
 
@@ -434,11 +461,42 @@ lv_obj_t * lv_list_get_next_btn(const lv_obj_t * list, lv_obj_t * prev_btn)
     if(btn == NULL) return NULL;
 
     while(btn->signal_func != lv_list_btn_signal) {
-        btn = lv_obj_get_child_back(scrl, prev_btn);
+        btn = lv_obj_get_child_back(scrl, btn);
         if(btn == NULL) break;
     }
 
     return btn;
+}
+
+/**
+ * Get the index of the button in the list
+ * @param list pointer to a list object
+ * @param btn pointer to a list element (button)
+ * @return the index of the button in the list, or -1 of the button not in this list
+ */
+int32_t lv_list_get_btn_index(const lv_obj_t * list, const lv_obj_t * btn)
+{
+	int index = 0;
+	lv_obj_t * e = lv_list_get_next_btn(list, NULL);
+	while(e != NULL) {
+		if(e == btn) {
+			return index;
+		}
+		index ++;
+        e = lv_list_get_next_btn(list, e);
+	}
+	return -1;
+}
+
+/**
+ * Get the number of buttons in the list
+ * @param list pointer to a list object
+ * @return the number of buttons in the list
+ */
+uint32_t lv_list_get_size(const lv_obj_t * list)
+{
+    lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
+    return ext->size;
 }
 
 #if USE_LV_GROUP
@@ -474,31 +532,40 @@ uint16_t lv_list_get_anim_time(const lv_obj_t * list)
  *  */
 lv_style_t * lv_list_get_style(const lv_obj_t * list, lv_list_style_t type)
 {
+    lv_style_t * style = NULL;
     lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
 
     switch(type) {
         case LV_LIST_STYLE_BG:
-            return lv_page_get_style(list, LV_PAGE_STYLE_BG);
+            style = lv_page_get_style(list, LV_PAGE_STYLE_BG);
+            break;
         case LV_LIST_STYLE_SCRL:
-            return lv_page_get_style(list, LV_PAGE_STYLE_SB);
+            style = lv_page_get_style(list, LV_PAGE_STYLE_SB);
+            break;
         case LV_LIST_STYLE_SB:
-            return lv_page_get_style(list, LV_PAGE_STYLE_SCRL);
+            style = lv_page_get_style(list, LV_PAGE_STYLE_SCRL);
+            break;
         case LV_LIST_STYLE_BTN_REL:
-            return ext->styles_btn[LV_BTN_STATE_REL];
+            style = ext->styles_btn[LV_BTN_STATE_REL];
+            break;
         case LV_LIST_STYLE_BTN_PR:
-            return ext->styles_btn[LV_BTN_STATE_PR];
+            style = ext->styles_btn[LV_BTN_STATE_PR];
+            break;
         case LV_LIST_STYLE_BTN_TGL_REL:
-            return ext->styles_btn[LV_BTN_STATE_TGL_REL];
+            style = ext->styles_btn[LV_BTN_STATE_TGL_REL];
+            break;
         case LV_LIST_STYLE_BTN_TGL_PR:
-            return ext->styles_btn[LV_BTN_STATE_TGL_PR];
+            style = ext->styles_btn[LV_BTN_STATE_TGL_PR];
+            break;
         case LV_LIST_STYLE_BTN_INA:
-            return ext->styles_btn[LV_BTN_STATE_INA];
+            style = ext->styles_btn[LV_BTN_STATE_INA];
+            break;
         default:
-            return NULL;
+            style = NULL;
+            break;
     }
 
-    /*To avoid warning*/
-    return NULL;
+    return style;
 }
 /*=====================
  * Other functions
@@ -644,7 +711,15 @@ static lv_res_t lv_list_signal(lv_obj_t * list, lv_signal_t sign, void * param)
         if(indev_type == LV_INDEV_TYPE_ENCODER) {
             lv_group_t * g = lv_obj_get_group(list);
             if(lv_group_get_editing(g)) {
-                lv_list_set_btn_selected(list, lv_list_get_next_btn(list, NULL));
+                lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
+                if(NULL != ext->last_sel) {
+                    /* Select the    last used button */
+                    lv_list_set_btn_selected(list, ext->last_sel);
+                }
+                else {
+                    /*Get the first button and mark it as selected*/
+                    lv_list_set_btn_selected(list, lv_list_get_next_btn(list, NULL));
+                }
             } else {
                 lv_list_set_btn_selected(list, NULL);
             }
@@ -655,8 +730,15 @@ static lv_res_t lv_list_signal(lv_obj_t * list, lv_signal_t sign, void * param)
             if(last_clicked_btn) {
                 lv_list_set_btn_selected(list, last_clicked_btn);
             } else {
-                /*Get the first button and mark it as selected*/
-                lv_list_set_btn_selected(list, lv_list_get_next_btn(list, NULL));
+                lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
+                if(NULL != ext->last_sel) {
+                    /* Select the last used button */
+                    lv_list_set_btn_selected(list, ext->last_sel);
+                }
+                else {
+                    /*Get the first button and mark it as selected*/
+                    lv_list_set_btn_selected(list, lv_list_get_next_btn(list, NULL));
+                }
             }
         }
 #endif
@@ -710,6 +792,8 @@ static lv_res_t lv_list_signal(lv_obj_t * list, lv_signal_t sign, void * param)
             }
 
             if(btn != NULL) {
+                lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
+                ext->last_sel = btn;
                 lv_action_t rel_action;
                 rel_action = lv_btn_get_action(btn, LV_BTN_ACTION_CLICK);
                 if(rel_action != NULL) rel_action(btn);
@@ -767,8 +851,14 @@ static lv_res_t lv_list_btn_signal(lv_obj_t * btn, lv_signal_t sign, void * para
         last_clicked_btn = btn;
 
     }
-#endif
+    if(sign == LV_SIGNAL_CLEANUP) {
 
+        lv_obj_t * list = lv_obj_get_parent(lv_obj_get_parent(btn));
+        lv_obj_t * sel = lv_list_get_btn_selected(list);
+        if(sel == btn) lv_list_set_btn_selected(list, lv_list_get_next_btn(list, btn));
+    }
+
+#endif
 
     return res;
 }

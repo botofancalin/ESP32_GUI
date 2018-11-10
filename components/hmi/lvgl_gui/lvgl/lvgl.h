@@ -55,6 +55,7 @@ extern "C" {
 #include "lv_objx/lv_arc.h"
 #include "lv_objx/lv_preload.h"
 #include "lv_objx/lv_calendar.h"
+#include "lv_objx/lv_spinbox.h"
 
 /*********************
  *      DEFINES
@@ -63,7 +64,7 @@ extern "C" {
 #define LVGL_VERSION_MAJOR   5
 #define LVGL_VERSION_MINOR   3
 #define LVGL_VERSION_PATCH   0
-#define LVGL_VERSION_INFO    ""
+#define LVGL_VERSION_INFO    "dev"
 
 /**********************
  *      TYPEDEFS

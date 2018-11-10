@@ -23,6 +23,7 @@
  **********************/
 static void style_mod_def(lv_style_t * style);
 static void style_mod_edit_def(lv_style_t * style);
+static void lv_group_refocus(lv_group_t *g);
 
 /**********************
  *  STATIC VARIABLES
@@ -92,7 +93,7 @@ void lv_group_add_obj(lv_group_t * group, lv_obj_t * obj)
     /*If the object is already in a group and focused then defocuse it*/
     if(obj->group_p) {
         if(lv_obj_is_focused(obj)) {
-            lv_group_focus_next(obj->group_p);
+            lv_group_refocus(obj->group_p);
 
             LV_LOG_INFO("group: assign object to an other group");
         }
@@ -107,7 +108,7 @@ void lv_group_add_obj(lv_group_t * group, lv_obj_t * obj)
     /* If the head and the tail is equal then there is only one object in the linked list.
      * In this case automatically activate it*/
     if(lv_ll_get_head(&group->obj_ll) == next) {
-        lv_group_focus_next(group);
+        lv_group_refocus(group);
     }
 }
 
@@ -122,7 +123,7 @@ void lv_group_remove_obj(lv_obj_t * obj)
     if(g->obj_focus == NULL) return;        /*Just to be sure (Not possible if there is at least one object in the group)*/
 
     if(*g->obj_focus == obj) {
-        lv_group_focus_next(g);
+        lv_group_refocus(g);
     }
 
     /* If the focuses object is still the same then it was the only object in the group but it will be deleted.
@@ -138,6 +139,7 @@ void lv_group_remove_obj(lv_obj_t * obj)
             lv_ll_rem(&g->obj_ll, i);
             lv_mem_free(i);
             obj->group_p = NULL;
+            break;
         }
     }
 }
@@ -152,6 +154,9 @@ void lv_group_focus_obj(lv_obj_t * obj)
     if(g == NULL) return;
 
     if(g->frozen != 0) return;
+
+    /*On defocus edit mode must be leaved*/
+    lv_group_set_editing(g, false);
 
     lv_obj_t ** i;
     LL_READ(g->obj_ll, i) {
@@ -294,8 +299,15 @@ void lv_group_set_focus_cb(lv_group_t * group, lv_group_focus_cb_t focus_cb)
  */
 void lv_group_set_editing(lv_group_t * group, bool edit)
 {
-    group->editing = edit ? 1 : 0;
+    uint8_t en_val = edit ? 1 : 0;
+
+    if(en_val == group->editing) return;        /*Do not set the same mode again*/
+
+    group->editing = en_val;
     lv_obj_t * focused = lv_group_get_focused(group);
+
+    if(focused) focused->signal_func(focused, LV_SIGNAL_FOCUS, NULL);       /*Focus again to properly leave edit mode*/
+
     lv_obj_invalidate(focused);
 }
 
@@ -307,6 +319,17 @@ void lv_group_set_editing(lv_group_t * group, bool edit)
 void lv_group_set_click_focus(lv_group_t * group, bool en)
 {
     group->click_focus = en ? 1 : 0;
+}
+
+void lv_group_set_refocus_policy(lv_group_t * group, lv_group_refocus_policy_t policy) {
+    group->refocus_policy = policy & 0x01;
+}
+
+static void lv_group_refocus(lv_group_t *g) {
+	if(g->refocus_policy == LV_GROUP_REFOCUS_POLICY_NEXT)
+		lv_group_focus_next(g);
+	else if(g->refocus_policy == LV_GROUP_REFOCUS_POLICY_PREV)
+		lv_group_focus_prev(g);
 }
 
 /**

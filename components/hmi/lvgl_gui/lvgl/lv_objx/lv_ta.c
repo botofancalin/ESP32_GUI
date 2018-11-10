@@ -750,21 +750,25 @@ uint16_t lv_ta_get_max_length(lv_obj_t * ta)
  */
 lv_style_t * lv_ta_get_style(const lv_obj_t * ta, lv_ta_style_t type)
 {
+    lv_style_t * style = NULL;
     lv_ta_ext_t * ext = lv_obj_get_ext_attr(ta);
 
     switch(type) {
         case LV_TA_STYLE_BG:
-            return lv_page_get_style(ta, LV_PAGE_STYLE_BG);
+            style = lv_page_get_style(ta, LV_PAGE_STYLE_BG);
+            break;
         case LV_TA_STYLE_SB:
-            return lv_page_get_style(ta, LV_PAGE_STYLE_SB);
+            style = lv_page_get_style(ta, LV_PAGE_STYLE_SB);
+            break;
         case LV_TA_STYLE_CURSOR:
-            return ext->cursor.style;
+            style = ext->cursor.style;
+            break;
         default:
-            return NULL;
+            style = NULL;
+            break;
     }
 
-    /*To avoid warning*/
-    return NULL;
+    return style;
 }
 
 /*=====================
@@ -1087,7 +1091,12 @@ static lv_res_t lv_ta_signal(lv_obj_t * ta, lv_signal_t sign, void * param)
         else if(c == LV_GROUP_KEY_LEFT) lv_ta_cursor_left(ta);
         else if(c == LV_GROUP_KEY_UP)   lv_ta_cursor_up(ta);
         else if(c == LV_GROUP_KEY_DOWN) lv_ta_cursor_down(ta);
-        else if(c == LV_GROUP_KEY_DEL)  lv_ta_del_char(ta);
+        else if(c == LV_GROUP_KEY_BACKSPACE) lv_ta_del_char(ta);
+        else if(c == LV_GROUP_KEY_DEL)  {
+            uint16_t cp = lv_ta_get_cursor_pos(ta);
+            lv_ta_set_cursor_pos(ta, cp + 1);
+            if(cp != lv_ta_get_cursor_pos(ta)) lv_ta_del_char(ta);
+        }
         else {
             lv_ta_add_char(ta, c);
         }
@@ -1106,9 +1115,22 @@ static lv_res_t lv_ta_signal(lv_obj_t * ta, lv_signal_t sign, void * param)
         cur_type = lv_ta_get_cursor_type(ta);
         lv_ta_set_cursor_type(ta, cur_type | LV_CURSOR_HIDDEN);
     } else if(sign == LV_SIGNAL_FOCUS) {
+#if USE_LV_GROUP
         lv_cursor_type_t cur_type;
         cur_type = lv_ta_get_cursor_type(ta);
-        lv_ta_set_cursor_type(ta, cur_type & (~LV_CURSOR_HIDDEN));
+        lv_group_t * g = lv_obj_get_group(ta);
+        bool editing = lv_group_get_editing(g);
+        lv_hal_indev_type_t indev_type = lv_indev_get_type(lv_indev_get_act());
+
+        /*Encoders need special handling*/
+        if(indev_type == LV_INDEV_TYPE_ENCODER) {
+            if(editing) lv_ta_set_cursor_type(ta, cur_type & (~LV_CURSOR_HIDDEN));
+            else lv_ta_set_cursor_type(ta, cur_type | LV_CURSOR_HIDDEN);
+        }
+        else {
+            lv_ta_set_cursor_type(ta, cur_type & (~LV_CURSOR_HIDDEN));
+        }
+#endif
     }
     return res;
 }
