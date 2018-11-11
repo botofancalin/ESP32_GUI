@@ -19,6 +19,9 @@ COMPONENT_SRCDIRS := . \
     $(LVGLLIB)/lv_fonts \
     $(LVGLLIB)/lv_objx \
     $(LVGLLIB)/lv_themes \
+    lv_examples/lv_apps/benchmark \
+    lv_examples/lv_apps/demo \
+    lv_examples/lv_apps/sysmon
 
 COMPONENT_ADD_INCLUDEDIRS := . \
     ./include \
@@ -30,6 +33,9 @@ COMPONENT_ADD_INCLUDEDIRS := . \
     $(LVGLLIB)/lv_fonts \
     $(LVGLLIB)/lv_objx \
     $(LVGLLIB)/lv_themes \
+    lv_examples/lv_apps/benchmark \
+    lv_examples/lv_apps/demo \
+    lv_examples/lv_apps/sysmon
 
 COMPONENT_PRIV_INCLUDEDIRS +=  . \
     ./include \
@@ -41,6 +47,9 @@ COMPONENT_PRIV_INCLUDEDIRS +=  . \
     $(LVGLLIB)/lv_fonts \
     $(LVGLLIB)/lv_objx \
     $(LVGLLIB)/lv_themes \
+    lv_examples/lv_apps/benchmark \
+    lv_examples/lv_apps/demo \
+    lv_examples/lv_apps/sysmon
 
 ifdef CONFIG_LVGL_USE_CUSTOM_DRIVER
 COMPONENT_DEPENDS += $(call dequote,$(CONFIG_LVGL_CUSTOM_DRIVER_COMPONENT_NAME))

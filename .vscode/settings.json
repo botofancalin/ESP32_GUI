@@ -2,6 +2,7 @@
     "files.associations": {
         "demo.h": "c",
         "lvgl.h": "c",
-        "esp_freertos_hooks.h": "c"
+        "esp_freertos_hooks.h": "c",
+        "iot_lvgl.h": "c"
     }
 }

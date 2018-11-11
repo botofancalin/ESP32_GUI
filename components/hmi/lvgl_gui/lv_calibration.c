@@ -333,6 +333,13 @@ bool lvgl_calibration_transform(lv_point_t *data)
 
 bool lvgl_calibrate_mouse(lv_indev_drv_t indev_drv)
 {
+    // Calculate the calibration
+    unsigned i, maxpoints, j;
+    int32_t px, py;
+    lv_indev_data_t data;
+
+    maxpoints = (GMOUSE_VFLG_CAL_TEST) ? 4 : 3;
+
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
         // NVS partition was truncated and needs to be erased
@@ -342,6 +349,7 @@ bool lvgl_calibrate_mouse(lv_indev_drv_t indev_drv)
     }
     ESP_ERROR_CHECK( err );
     vTaskDelay(CALIBRATION_POLL_PERIOD / portTICK_PERIOD_MS);   //Wait until nvs is stable， otherwise will cause exception
+    
 
     if (touch_load_calibration(&caldata, sizeof(GMouseCalibration))) {
         calibrated = true;
@@ -386,13 +394,6 @@ bool lvgl_calibrate_mouse(lv_indev_drv_t indev_drv)
         lv_obj_t *label1 = lv_label_create(lv_scr_act(), NULL);
         lv_label_set_text(label1, "Calibration");
         lv_obj_align(label1, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
-
-        // Calculate the calibration
-        unsigned i, maxpoints, j;
-        int32_t px, py;
-        lv_indev_data_t data;
-
-        maxpoints = (GMOUSE_VFLG_CAL_TEST) ? 4 : 3;
 
         // Loop through the calibration points
         for (i = 0; i < maxpoints; i++) {

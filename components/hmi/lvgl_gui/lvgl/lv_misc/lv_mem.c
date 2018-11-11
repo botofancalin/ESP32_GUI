@@ -86,7 +86,7 @@ void lv_mem_init(void)
     /*The total mem size id reduced by the first header and the close patterns */
     full->header.d_size = LV_MEM_SIZE - sizeof(lv_mem_header_t);
 #endif
-#if LV_USE_DMA
+#if LV_USE_HEAP
     vdb_init();
 #endif
 

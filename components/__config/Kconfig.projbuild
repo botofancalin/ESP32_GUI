@@ -1411,6 +1411,13 @@ menu "IoT Solution settings"
                     help 
                         "Enable Double Buffer For LittlevGL"
 
+                 config LVGL_DRIVER_BUFFER_HEAP_ALLOCATION
+                    depends on LVGL_LCD_DRIVER_FRAMEBUFFER_MODE
+                    bool "LittlevGL Driver Buffer HEAP alloc Enable"
+                    default n
+                    help 
+                        "Enable Buffer allocation in HEAP memmory"
+
                 choice LVGL_DISP_ROTATE
                     prompt "Choose Screen Rotate"
                     default LVGL_DISP_ROTATE_90

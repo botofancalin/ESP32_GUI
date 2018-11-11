@@ -42,7 +42,7 @@ typedef uint8_t lv_vdb_state_t;
 static volatile lv_vdb_state_t vdb_state = LV_VDB_STATE_ACTIVE;
 #  if LV_VDB_ADR == 0
 /*If the buffer address is not specified  simply allocate it*/
-#   if LV_USE_DMA == 0
+#   if LV_USE_HEAP == 0
 static uint8_t vdb_buf[LV_VDB_SIZE_IN_BYTES];
 static lv_vdb_t vdb = {.buf = (lv_color_t *)vdb_buf};
 # else
@@ -51,7 +51,7 @@ static uint8_t *vdb_buf;
 static lv_vdb_t vdb;
 void vdb_init()
 {
-    vdb_buf = (uint8_t *)heap_caps_malloc(LV_VDB_SIZE_IN_BYTES, MALLOC_CAP_DMA);
+    vdb_buf = (uint8_t *)malloc(LV_VDB_SIZE_IN_BYTES);
     lv_mem_assert(vdb_buf);
     vdb.buf = (lv_color_t *)vdb_buf;
 }
@@ -66,7 +66,7 @@ static lv_vdb_t vdb = {.buf = (lv_color_t *)LV_VDB_ADR};
 static volatile lv_vdb_state_t vdb_state[2] = {LV_VDB_STATE_FREE, LV_VDB_STATE_FREE};
 #  if LV_VDB_ADR == 0
 /*If the buffer address is not specified  simply allocate it*/
-#if LV_USE_DMA == 0
+#if LV_USE_HEAP == 0
 static uint8_t vdb_buf1[LV_VDB_SIZE_IN_BYTES];
 static uint8_t vdb_buf2[LV_VDB_SIZE_IN_BYTES];
 static lv_vdb_t vdb[2] = {{.buf = (lv_color_t *) vdb_buf1}, {.buf = (lv_color_t *) vdb_buf2}};
@@ -78,9 +78,9 @@ static lv_vdb_t vdb[2];
 
 void vdb_init()
 {
-    vdb_buf1 = (uint8_t *)heap_caps_malloc(LV_VDB_SIZE_IN_BYTES, MALLOC_CAP_DMA);
+    vdb_buf1 = (uint8_t *)malloc(LV_VDB_SIZE_IN_BYTES);
     lv_mem_assert(vdb_buf1);
-    vdb_buf2 = (uint8_t *)heap_caps_malloc(LV_VDB_SIZE_IN_BYTES, MALLOC_CAP_DMA);
+    vdb_buf2 = (uint8_t *)malloc(LV_VDB_SIZE_IN_BYTES);
     lv_mem_assert(vdb_buf2);
     vdb[0].buf = (lv_color_t *) vdb_buf1;
     vdb[1].buf = (lv_color_t *) vdb_buf2;

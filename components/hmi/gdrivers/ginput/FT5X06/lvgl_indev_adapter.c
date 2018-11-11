@@ -99,6 +99,7 @@ static bool ex_tp_read(lv_indev_data_t *data)
             x = data->point.x;
             y = data->point.y;
         }
+        return true;
     }
     return false;
 }
