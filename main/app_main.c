@@ -89,11 +89,11 @@ static void littlevgl_demo(void)
 
     chart = lv_chart_create(tab2, NULL);
     lv_obj_set_size(chart, 300, 150);
-    lv_chart_set_point_count(chart, 20);
+    lv_chart_set_point_count(chart, 200);
     lv_obj_align(chart, NULL, LV_ALIGN_CENTER, 0, 0);
-    lv_chart_set_type(chart, (lv_chart_type_t)(LV_CHART_TYPE_POINT | LV_CHART_TYPE_LINE));
+    lv_chart_set_type(chart, (lv_chart_type_t)(LV_CHART_TYPE_LINE));
     lv_chart_set_series_opa(chart, LV_OPA_70);
-    lv_chart_set_series_width(chart, 4);
+    lv_chart_set_series_width(chart, 2);
     lv_chart_set_range(chart, 0, 100);
     series = lv_chart_add_series(chart, LV_COLOR_RED);
 
@@ -130,12 +130,32 @@ static void littlevgl_demo(void)
 static void user_task(void *pvParameter)
 {
     uint8_t value = 0;
+    bool up = true;
     while (1)
     {
-        value = esp_random() % 100;
-        lv_chart_set_next(chart, series, value);
-        lv_gauge_set_value(gauge, 0, value);
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+        if (up)
+        {
+            for (size_t i = 0; i < 100; i++)
+            {
+                value = i;
+                lv_chart_set_next(chart, series, value);
+                lv_gauge_set_value(gauge, 0, value);
+                vTaskDelay(10 / portTICK_PERIOD_MS);
+            }
+            up = false;
+        }
+
+        else
+        {
+            for (size_t i = 100; i > 0; i--)
+            {
+                value = i;
+                lv_chart_set_next(chart, series, value);
+                lv_gauge_set_value(gauge, 0, value);
+                vTaskDelay(10 / portTICK_PERIOD_MS);
+            }
+            up = true;
+        }
     }
 }
 #endif

@@ -259,7 +259,7 @@ lv_disp_drv_t lvgl_lcd_display_init()
 
 #ifdef CONFIG_LVGL_DISP_ROTATE_0
     board_lcd_write_cmd(ILI9341_MEMACCESS_REG);
-    board_lcd_write_data_byte(0x80 | 0x08);
+    board_lcd_write_data_byte(0x20 | 0x08);
     ESP_LOGI("lvgl_example", "CONFIG_LVGL_DISP_ROTATE_0");
 #elif defined(CONFIG_LVGL_DISP_ROTATE_90)
     board_lcd_write_cmd(ILI9341_MEMACCESS_REG);

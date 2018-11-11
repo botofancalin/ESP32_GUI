@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := esp32_gui
+PROJECT_NAME := esp32_lvgl
 
 #If SOLUTION_PATH is not defined, use relative path as default value
 IOT_SOLUTION_PATH ?= $(abspath $(shell pwd)/)
