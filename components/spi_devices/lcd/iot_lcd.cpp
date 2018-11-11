@@ -35,8 +35,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-#include "Adafruit_GFX.h"
 #include "iot_lcd.h"
 #include "spi_lcd.h"
 #include "font7s.h"
