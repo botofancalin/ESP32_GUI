@@ -9,7 +9,7 @@
             "type": "gdb",
             "request": "attach",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/build/esp32_gui.elf",
+            "executable": "${workspaceRoot}/build/esp32_lvgl.elf",
             "target": ":3333",
             "remote": true,
             "gdbpath": "C:/Program Files/Espressif/ESP-IDF Tools/tools/bin/xtensa-esp32-elf-gdb.exe",
