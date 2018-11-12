@@ -22,49 +22,32 @@
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
 #include "freertos/event_groups.h"
+/* esp includes */
 #include "esp_freertos_hooks.h"
-#include "lv_examples/lv_apps/sysmon/sysmon.h"
+#include "esp_log.h"
 
 /* lvgl includes */
 #include "iot_lvgl.h"
+#include "lv_examples/lv_apps/demo/demo.h"
+#include "lv_examples/lv_tests/lv_test_stress/lv_test_stress.h"
 
-/* esp includes */
-#include "esp_log.h"
+
 
 static TimerHandle_t lvgl_tick_timer;
 
 static void IRAM_ATTR lv_tick_task_callback(TimerHandle_t xTimer)
 {
     /* Initialize a Timer for 1 ms period and
-     * in its interrupt call
-     * lv_tick_inc(1); */
+     * in its interrupt call */
     lv_tick_inc(1);
 }
 
-static void user_task(void *pvParameter)
-{
-    sysmon_create();
-
-    while (1)
-    {
-        vTaskDelay(1);
-        lv_task_handler();
-    }
-}
-
-/******************************************************************************
- * FunctionName : app_main
- * Description  : entry of user application, init user function here
- * Parameters   : none
- * Returns      : none
-*******************************************************************************/
-void app_main()
+static void hal_init()
 {
     /* Initialize LittlevGL */
     lv_init();
 
     /* Tick interface， Initialize a Timer for 1 ms period and in its interrupt call*/
-    // esp_register_freertos_tick_hook(lv_tick_task_callback);
     lvgl_tick_timer = xTimerCreate(
         "lv_tickinc_task",
         1 / portTICK_PERIOD_MS, //period time
@@ -81,14 +64,35 @@ void app_main()
     /* Input device interface */
     lv_indev_drv_t indevdrv = lvgl_indev_init(); /*Initialize your indev*/
 
-    vTaskDelay(50 / portTICK_PERIOD_MS); // wait for execute lv_task_handler, avoid 'error'
-
+    /*Check touch calibration and calibrate if needed*/
     lvgl_calibrate_mouse(indevdrv);
+}
+
+static void user_task(void *pvParameter)
+{
+    demo_create();
+
+    while (1)
+    {
+        vTaskDelay(1);
+        lv_task_handler();
+    }
+}
+
+/******************************************************************************
+ * FunctionName : app_main
+ * Description  : entry of user application, init user function here
+ * Parameters   : none
+ * Returns      : none
+*******************************************************************************/
+void app_main()
+{
+    hal_init();
 
     xTaskCreatePinnedToCore(
         user_task,   //Task Function
         "user_task", //Task Name
-        2048,        //Stack Depth
+        4096,        //Stack Depth
         NULL,        //Parameters
         1,           //Priority
         NULL,        //Task Handler

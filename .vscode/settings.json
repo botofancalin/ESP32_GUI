@@ -3,6 +3,11 @@
         "demo.h": "c",
         "lvgl.h": "c",
         "esp_freertos_hooks.h": "c",
-        "iot_lvgl.h": "c"
+        "iot_lvgl.h": "c",
+        "sysmon.h": "c",
+        "lv_test_stress.h": "c",
+        "lv_conf.h": "c",
+        "lv_ex_conf.h": "c",
+        "sdkconfig.h": "c"
     }
 }

@@ -16,7 +16,7 @@
 
 /* Memory size which will be used by the library
  * to store the graphical objects and other data */
-#define LV_MEM_CUSTOM      0                /*1: use custom malloc/free, 0: use the built-in lv_mem_alloc/lv_mem_free*/
+#define LV_MEM_CUSTOM      1                /*1: use custom malloc/free, 0: use the built-in lv_mem_alloc/lv_mem_free*/
 #if LV_MEM_CUSTOM == 0
 #define LV_MEM_SIZE    (32U * 1024U)        /*Size memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
 #define LV_MEM_ATTR                         /*Complier prefix for big array declaration*/
@@ -27,7 +27,7 @@
 #define LV_MEM_CUSTOM_FREE    free         /*Wrapper to free*/
 #endif     /*LV_MEM_CUSTOM*/
 
-#define LV_USE_HEAP		LVGL_DRIVER_BUFFER_HEAP_ALLOCATION
+#define LV_USE_HEAP		CONFIG_LVGL_DRIVER_BUFFER_HEAP_ALLOCATION
 
 /*===================
    Graphical settings

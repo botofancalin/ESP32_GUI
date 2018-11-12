@@ -21,7 +21,8 @@ COMPONENT_SRCDIRS := . \
     $(LVGLLIB)/lv_themes \
     lv_examples/lv_apps/benchmark \
     lv_examples/lv_apps/demo \
-    lv_examples/lv_apps/sysmon
+    lv_examples/lv_apps/sysmon \
+    lv_examples/lv_tests/lv_test_stress \
 
 COMPONENT_ADD_INCLUDEDIRS := . \
     ./include \
@@ -35,7 +36,8 @@ COMPONENT_ADD_INCLUDEDIRS := . \
     $(LVGLLIB)/lv_themes \
     lv_examples/lv_apps/benchmark \
     lv_examples/lv_apps/demo \
-    lv_examples/lv_apps/sysmon
+    lv_examples/lv_apps/sysmon \
+    lv_examples/lv_tests/lv_test_stress \
 
 COMPONENT_PRIV_INCLUDEDIRS +=  . \
     ./include \
@@ -49,7 +51,8 @@ COMPONENT_PRIV_INCLUDEDIRS +=  . \
     $(LVGLLIB)/lv_themes \
     lv_examples/lv_apps/benchmark \
     lv_examples/lv_apps/demo \
-    lv_examples/lv_apps/sysmon
+    lv_examples/lv_apps/sysmon \
+    lv_examples/lv_tests/lv_test_stress \
 
 ifdef CONFIG_LVGL_USE_CUSTOM_DRIVER
 COMPONENT_DEPENDS += $(call dequote,$(CONFIG_LVGL_CUSTOM_DRIVER_COMPONENT_NAME))

@@ -18,6 +18,7 @@
 #define LV_EX_KEYBOARD  1       /*Add PC keyboard support to some examples (`lv_drivers` repository is required)*/
 #define LV_EX_ENCODER   1       /*Add 'encoder' (mouse wheel) support to some examples (`lv_drivers` repository is required)*/
 #define LV_CONF_INCLUDE_SIMPLE  1
+//#define USE_LV_ANIMATION    1
 
 /*******************
  *   TEST USAGE
