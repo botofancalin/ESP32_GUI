@@ -74,61 +74,6 @@ public:
 
 static CEspLcdAdapter *lcd_obj = NULL;
 
-#if CONFIG_UGFX_DRIVER_AUTO_FLUSH_ENABLE
-SemaphoreHandle_t flush_sem = NULL;
-static uint16_t flush_width;
-static uint16_t flush_height;
-
-void board_lcd_flush_task(void *arg)
-{
-    portBASE_TYPE res;
-    while (1) {
-        res = xSemaphoreTake(flush_sem, portMAX_DELAY);
-        if (res == pdTRUE) {
-            lcd_obj->drawBitmap(0, 0, (const uint16_t *)lcd_obj->pFrameBuffer, flush_width, flush_height);
-            vTaskDelay(CONFIG_UGFX_DRIVER_AUTO_FLUSH_INTERVAL / portTICK_RATE_MS);
-        }
-    }
-}
-#endif /* CONFIG_UGFX_DRIVER_AUTO_FLUSH_ENABLE */
-
-#ifdef CONFIG_UGFX_GUI_ENABLE
-
-void board_lcd_init()
-{
-    /*Initialize LCD*/
-    lcd_conf_t lcd_pins = {
-        .lcd_model = LCD_MOD_AUTO_DET,
-        .pin_num_miso = CONFIG_UGFX_LCD_MISO_GPIO,
-        .pin_num_mosi = CONFIG_UGFX_LCD_MOSI_GPIO,
-        .pin_num_clk = CONFIG_UGFX_LCD_CLK_GPIO,
-        .pin_num_cs = CONFIG_UGFX_LCD_CS_GPIO,
-        .pin_num_dc = CONFIG_UGFX_LCD_DC_GPIO,
-        .pin_num_rst = CONFIG_UGFX_LCD_RESET_GPIO,
-        .pin_num_bckl = CONFIG_UGFX_LCD_BL_GPIO,
-        .clk_freq = CONFIG_UGFX_LCD_SPI_CLOCK,
-        .rst_active_level = 0,
-        .bckl_active_level = 1,
-        .spi_host = (spi_host_device_t)CONFIG_UGFX_LCD_SPI_NUM,
-        .init_spi_bus = true,
-    };
-
-    if (lcd_obj == NULL) {
-        lcd_obj = new CEspLcdAdapter(&lcd_pins);
-    }
-    lcd_obj->writeCmdData(ILI9341_MEMACCESS_REG, 0x80 | 0x08); // as default rotate
-
-#if CONFIG_UGFX_DRIVER_AUTO_FLUSH_ENABLE
-    // For framebuffer mode and flush
-    if (flush_sem == NULL) {
-        flush_sem = xSemaphoreCreateBinary();
-    }
-    xTaskCreate(board_lcd_flush_task, "flush_task", 1500, NULL, 5, NULL);
-#endif
-}
-
-#endif
-
 void board_lcd_flush(int16_t x, int16_t y, const uint16_t *bitmap, int16_t w, int16_t h)
 {
 #if CONFIG_UGFX_DRIVER_AUTO_FLUSH_ENABLE
@@ -245,7 +190,7 @@ lv_disp_drv_t lvgl_lcd_display_init()
         .pin_num_bckl = CONFIG_LVGL_LCD_BL_GPIO,
         .clk_freq = CONFIG_LVGL_LCD_SPI_CLOCK,
         .rst_active_level = 0,
-        .bckl_active_level = 1,
+        .bckl_active_level = 0,
         .spi_host = (spi_host_device_t)CONFIG_LVGL_LCD_SPI_NUM,
         .init_spi_bus = true,
     };

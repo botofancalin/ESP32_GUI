@@ -105,9 +105,8 @@ typedef struct {
 } lcd_dc_t;
 
 #ifdef __cplusplus
-#include "Adafruit_GFX.h"
 
-class CEspLcd: public Adafruit_GFX
+class CEspLcd
 {
 private:
     spi_device_handle_t spi_wr = NULL;
@@ -174,46 +173,7 @@ public:
      */
     void drawBitmap(int16_t x, int16_t y, const uint16_t *bitmap, int16_t w, int16_t h);
 
-    /**
-     * @brief Load bitmap data from flash partition and fill the pixels on LCD screen
-     * @param x Start position
-     * @param y Start position
-     * @param w width of image in bmp array
-     * @param h height of image in bmp array
-     * @param data_partition Flash storage that contains the bitmap data array.
-     * @param data_offset bitmap array begin offset
-     * @param malloc_pixal_size internal buffer size that driver would allocate.
-     * @param swap_bytes_en Whether to enable byte swap for each pixel word
-     *
-     * @return
-     *     - ESP_FAIL if partition is NULL
-     *     - ESP_OK on success
-     */
-    esp_err_t drawBitmapFromFlashPartition(int16_t x, int16_t y, int16_t w, int16_t h, esp_partition_t* data_partition,
-            int data_offset = 0, int malloc_pixal_size = 1024, bool swap_bytes_en = true);
-    /**
-     * @brief Avoid using it, Internal use for main class drawChar API
-     */
-    void drawBitmapFont(int16_t x, int16_t y, uint8_t w, uint8_t h, const uint16_t *bitmap);
-
-
-    /**
-     * @brief Draw a Vertical line
-     * @param x & y co-ordinates of start point
-     * @param h length of line
-     * @param color of the line
-     */
-    void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
-
-    /**
-     * @brief Draw a Horizontal line
-     * @param x & y co-ordinates of start point
-     * @param w length of line
-     * @param color of the line
-     */
-    void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
-
-    /**
+     /**
      * @brief Draw a filled rectangle
      * @param x & y co-ordinates of start point
      * @param w & h of rectangle to be displayed
@@ -221,56 +181,13 @@ public:
      */
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
 
-    /**
-     * @brief Draw a filled rectangle
-     * @param r rotation between 0 to 3, landscape/portrait
-     */
-    void setRotation(uint8_t r);
-
-    /*Yet to figure out what this does*/
-    void invertDisplay(bool i);
-
     /*Not useful for user, sets the Region of Interest window*/
     inline void setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-
-    /**
-     * @brief Scroll on Y-axis
-     * @param y scroll by y num of pixels
-     */
-    void scrollTo(uint16_t y);
 
     /**
      * @brief pass 8-bit colors, get 16bit packed number
      */
     uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
-
-    /**
-     * @brief write 7-segment float
-     */
-    int drawFloatSevSeg(float floatNumber, uint8_t decimal, uint16_t poX, uint16_t poY, uint8_t size);
-
-    /**
-     * @brief write 7-segment unicode
-     */
-    int drawUnicodeSevSeg(uint16_t uniCode, uint16_t x, uint16_t y, uint8_t size);
-
-    /**
-     * @brief write 7-segment string
-     */
-    int drawStringSevSeg(const char *string, uint16_t poX, uint16_t poY, uint8_t size);
-
-    /**
-     * @brief write 7-segment number
-     */
-    int drawNumberSevSeg(int long_num, uint16_t poX, uint16_t poY, uint8_t size);
-
-    int write_char(uint8_t c);
-
-    int drawString(const char *string, uint16_t x, uint16_t y);
-
-    int drawNumber(int long_num, uint16_t poX, uint16_t poY);
-
-    int drawFloat(float floatNumber, uint8_t decimal, uint16_t poX, uint16_t poY);
 };
 
 #endif

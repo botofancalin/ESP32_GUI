@@ -33,50 +33,55 @@
 
 
 
-static TimerHandle_t lvgl_tick_timer;
+// static TimerHandle_t lvgl_tick_timer;
 
-static void IRAM_ATTR lv_tick_task_callback(TimerHandle_t xTimer)
+// static void IRAM_ATTR lv_tick_task_callback(TimerHandle_t xTimer)
+// {
+//     /* Initialize a Timer for 1 ms period and
+//      * in its interrupt call */
+//     lv_tick_inc(1);
+// }
+
+// static void hal_init()
+// {
+//     /* Initialize LittlevGL */
+//     lv_init();
+
+//     /* Tick interface， Initialize a Timer for 1 ms period and in its interrupt call*/
+//     lvgl_tick_timer = xTimerCreate(
+//         "lv_tickinc_task",
+//         1 / portTICK_PERIOD_MS, //period time
+//         pdTRUE,                 //auto load
+//         (void *)NULL,           //timer parameter
+//         lv_tick_task_callback); //timer callback
+//     xTimerStart(lvgl_tick_timer, 0);
+
+//     /* Display interface */
+//     lvgl_lcd_display_init(); /*Initialize your display*/
+
+//     vTaskDelay(50 / portTICK_PERIOD_MS);
+
+//     /* Input device interface */
+//     //lv_indev_drv_t indevdrv = lvgl_indev_init(); /*Initialize your indev*/
+
+//     /*Check touch calibration and calibrate if needed*/
+//    // lvgl_calibrate_mouse(indevdrv);
+// }
+
+// static void user_task(void *pvParameter)
+// {
+//     demo_create();
+
+//     while (1)
+//     {
+//         vTaskDelay(1);
+//         lv_task_handler();
+//     }
+// }
+
+static void lv_tick_task(void)
 {
-    /* Initialize a Timer for 1 ms period and
-     * in its interrupt call */
-    lv_tick_inc(1);
-}
-
-static void hal_init()
-{
-    /* Initialize LittlevGL */
-    lv_init();
-
-    /* Tick interface， Initialize a Timer for 1 ms period and in its interrupt call*/
-    lvgl_tick_timer = xTimerCreate(
-        "lv_tickinc_task",
-        1 / portTICK_PERIOD_MS, //period time
-        pdTRUE,                 //auto load
-        (void *)NULL,           //timer parameter
-        lv_tick_task_callback); //timer callback
-    xTimerStart(lvgl_tick_timer, 0);
-
-    /* Display interface */
-    lvgl_lcd_display_init(); /*Initialize your display*/
-
-    vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    /* Input device interface */
-    lv_indev_drv_t indevdrv = lvgl_indev_init(); /*Initialize your indev*/
-
-    /*Check touch calibration and calibrate if needed*/
-    lvgl_calibrate_mouse(indevdrv);
-}
-
-static void user_task(void *pvParameter)
-{
-    demo_create();
-
-    while (1)
-    {
-        vTaskDelay(1);
-        lv_task_handler();
-    }
+	lv_tick_inc(portTICK_RATE_MS);
 }
 
 /******************************************************************************
@@ -87,14 +92,25 @@ static void user_task(void *pvParameter)
 *******************************************************************************/
 void app_main()
 {
-    hal_init();
+    lv_init();
 
-    xTaskCreatePinnedToCore(
-        user_task,   //Task Function
-        "user_task", //Task Name
-        4096,        //Stack Depth
-        NULL,        //Parameters
-        1,           //Priority
-        NULL,        //Task Handler
-        0);          //core to run
+	lvgl_lcd_display_init();
+
+	esp_register_freertos_tick_hook(lv_tick_task);
+
+	demo_create();
+
+	while(1) {
+		vTaskDelay(5 / portTICK_RATE_MS);
+		lv_task_handler();
+	}
+
+    // xTaskCreatePinnedToCore(
+    //     user_task,   //Task Function
+    //     "user_task", //Task Name
+    //     4096,        //Stack Depth
+    //     NULL,        //Parameters
+    //     1,           //Priority
+    //     NULL,        //Task Handler
+    //     0);          //core to run
 }

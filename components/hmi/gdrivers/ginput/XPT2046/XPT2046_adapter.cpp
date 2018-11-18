@@ -41,28 +41,6 @@ public:
     }
 };
 
-#ifdef CONFIG_UGFX_GUI_ENABLE
-
-void board_touch_init()
-{
-    xpt_conf_t xpt_conf;
-    xpt_conf.pin_num_cs = CONFIG_UGFX_TOUCH_CS_GPIO;   /*!<SPI Chip Select Pin*/
-    xpt_conf.pin_num_irq = CONFIG_UGFX_TOUCH_IRQ_GPIO; /*!< Touch screen IRQ pin */
-    xpt_conf.clk_freq = 1 * 1000 * 1000;               /*!< spi clock frequency */
-    xpt_conf.spi_host = (spi_host_device_t)CONFIG_UGFX_LCD_SPI_NUM;                     /*!< spi host index*/
-    xpt_conf.pin_num_miso = -1;                        /*!<MasterIn, SlaveOut pin*/
-    xpt_conf.pin_num_mosi = -1;                        /*!<MasterOut, SlaveIn pin*/
-    xpt_conf.pin_num_clk = -1;                         /*!<SPI Clock pin*/
-    xpt_conf.dma_chan = 1;
-    xpt_conf.init_spi_bus = false; /*!< Whether to initialize SPI bus */
-
-    if (xpt == NULL) {
-        xpt = new CTouchAdapter(&xpt_conf, 0);
-    }
-}
-
-#endif
-
 bool board_touch_is_pressed()
 {
     return xpt->is_pressed();
@@ -94,7 +72,6 @@ static bool ex_tp_read(lv_indev_data_t *data)
         // Apply calibration, rotation
         // Transform the co-ordinates
         if (lvgl_calibration_transform(&(data->point))) {
-            lv_coord_t t;
             // Rescale X,Y if we are using self-calibration
             #ifdef CONFIG_LVGL_DISP_ROTATE_0
                 data->point.x = data->point.x;
