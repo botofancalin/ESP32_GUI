@@ -9,20 +9,6 @@ menu "IoT Solution settings"
                 default n
                 help
                     "Select this one to enable PARAM FUNC"    
-
-        config IOT_BUTTON_ENABLE
-                bool "BUTTON_DEVICE_ENABLE"
-                default y
-                help
-                    "Select this one to enable button device"
-                    
-                menu "Button"
-                depends on IOT_BUTTON_ENABLE
-                    config IO_GLITCH_FILTER_TIME_MS
-                        int "IO glitch filter timer ms (10~100)"
-                        range 10 100
-                        default 50
-                endmenu  
         endmenu
         menu "SPI devices"
             config IOT_LCD_ENABLE

@@ -44,7 +44,7 @@
 #define USE_LV_DEMO        1
 #if USE_LV_DEMO
 #define LV_DEMO_WALLPAPER  1    /*Create a wallpaper too*/
-#define LV_DEMO_SLIDE_SHOW 0    /*Automatically switch between tabs*/
+#define LV_DEMO_SLIDE_SHOW 1    /*Automatically switch between tabs*/
 #endif
 
 /*MCU and memory usage monitoring*/

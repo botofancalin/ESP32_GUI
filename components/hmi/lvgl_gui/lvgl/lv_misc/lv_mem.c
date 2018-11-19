@@ -10,7 +10,6 @@
 #include "lv_mem.h"
 #include "lv_math.h"
 #include <string.h>
-#include "../lv_core/lv_vdb.h"
 
 #if LV_MEM_CUSTOM != 0
 #include LV_MEM_CUSTOM_INCLUDE
@@ -86,10 +85,6 @@ void lv_mem_init(void)
     /*The total mem size id reduced by the first header and the close patterns */
     full->header.d_size = LV_MEM_SIZE - sizeof(lv_mem_header_t);
 #endif
-#if LV_USE_HEAP
-    vdb_init();
-#endif
-
 }
 
 /**
