@@ -20,11 +20,13 @@ static void lv_tick_task(void)
 
 static void user_task(void *arg)
 {
+	//Init the GUI function
 	demo_create();
 	//lv_test_group_1();
 
 	while (1)
 	{
+		//Let's update the gui every 5ms
 		vTaskDelay(5 / portTICK_RATE_MS);
 		lv_task_handler();
 	}
@@ -32,18 +34,23 @@ static void user_task(void *arg)
 
 void app_main()
 {
+	//Init the lvgl component
 	lv_init();
 
+	//Init the display driver
 	display_init();
+	//Init the keypad driver
 	keypad_init();
 
+	//Hook up the tick task to RTOS ticker
 	esp_register_freertos_tick_hook(lv_tick_task);
 
+	//Create the user interface task
 	xTaskCreate(
 		user_task,   //Task Function
-		"user_task", //Task Name
-		8192,		 //Stack Depth
-		NULL,		 //Parameters
-		1,			 //Priority
+		"user_task", //Task Name, a name just for humans
+		8192,		 //Task Stack Depth (in words)
+		NULL,		 //Task Parameters
+		1,			 //Task Priority
 		NULL);		 //Task Handler
 }
