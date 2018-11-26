@@ -1,0 +1,5 @@
+menu "Include simple"
+    config LV_CONF_INCLUDE_SIMPLE
+        bool
+        default y
+endmenu

@@ -5,8 +5,10 @@
 
 PROJECT_NAME := esp32_lvgl
 
-#If SOLUTION_PATH is not defined, use relative path as default value
-IOT_SOLUTION_PATH ?= $(abspath $(shell pwd)/)
- 
-include $(IOT_SOLUTION_PATH)/components/component_conf.mk
+# Add new components (source folders)
+# Must be before include $(IDF_PATH)/make/project.mk
+# $(PROJECT_PATH)/xxx didn't work -> use $(abspath xxx) instead
+EXTRA_COMPONENT_DIRS := $(abspath components/drv)	$(abspath components/lvgl) $(abspath components/lv_examples)
+
 include $(IDF_PATH)/make/project.mk
+
