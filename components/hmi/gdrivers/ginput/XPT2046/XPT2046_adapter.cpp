@@ -25,7 +25,6 @@
 
 /* SPI Includes */
 #include "iot_xpt2046.h"
-#include "XPT2046_adapter.h"
 
 /* uGFX Config Include */
 #include "sdkconfig.h"

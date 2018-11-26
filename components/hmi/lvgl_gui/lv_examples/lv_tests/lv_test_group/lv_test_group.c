@@ -8,11 +8,12 @@
  *********************/
 #include "stdio.h"
 #include "lv_test_group.h"
+#include "../../drv/input.h"
 #if USE_LV_GROUP && USE_LV_TESTS
 
 #include "lvgl/lv_hal/lv_hal_indev.h"
 
-#if LV_EX_KEYBOARD || LV_EX_ENCODER
+#if LV_EX_KEYBOARD || LV_EX_MOUSEWHEEL
 #include "lv_drv_conf.h"
 #endif
 
@@ -20,8 +21,8 @@
 #include "lv_drivers/indev/keyboard.h"
 #endif
 
-#if LV_EX_ENCODER
-#include "lv_drivers/indev/encoder.h"
+#if LV_EX_MOUSEWHEEL
+#include "lv_drivers/indev/mousewheel.h"
 #endif
 
 /*********************
@@ -106,10 +107,10 @@ void lv_test_group_1(void)
     lv_indev_set_group(real_kb_indev, g);
 #endif
 
-#if LV_EX_ENCODER
+#if LV_EX_MOUSEWHEEL
     lv_indev_drv_t enc_drv;
     enc_drv.type = LV_INDEV_TYPE_ENCODER;
-    enc_drv.read = encoder_read;
+    enc_drv.read = mousewheel_read;
     lv_indev_t * enc_indev = lv_indev_drv_register(&enc_drv);
     lv_indev_set_group(enc_indev, g);
 #endif

@@ -43,8 +43,8 @@
  * VDB makes the double buffering, you don't need to deal with it!
  * Typical size: ~1/10 screen */
 #define LV_VDB_SIZE         (30 * LV_HOR_RES)  /*Size of VDB in pixel count (1/10 screen size is good for first)*/
-#define LV_VDB_PX_BPP       LV_COLOR_SIZE     /*Bit-per-pixel of VDB. Useful for monochrome or non-standard color format displays. (Special formats are handles with `disp_drv->vdb_wr`)*/
-#define LV_VDB_ADR          0                 /*Place VDB to a specific address (e.g. in external RAM) (0: allocate automatically into RAM; LV_VDB_ADR_INV: to replace it later with `lv_vdb_set_adr()`)*/
+#define LV_VDB_PX_BPP       LV_COLOR_SIZE      /*Bit-per-pixel of VDB. Useful for monochrome or non-standard color format displays. (Special formats are handled with `disp_drv->vdb_wr`)*/
+#define LV_VDB_ADR          0                  /*Place VDB to a specific address (e.g. in external RAM) (0: allocate automatically into RAM; LV_VDB_ADR_INV: to replace it later with `lv_vdb_set_adr()`)*/
 
 /* Use two Virtual Display buffers (VDB) parallelize rendering and flushing (optional)
  * The flushing should use DMA to write the frame buffer in the background*/
@@ -91,6 +91,7 @@
 /*Compiler settings*/
 #define LV_ATTRIBUTE_TICK_INC                   /* Define a custom attribute to `lv_tick_inc` function */
 #define LV_ATTRIBUTE_TASK_HANDLER               /* Define a custom attribute to `lv_task_handler` function */
+#define LV_ATTRIBUTE_FLUSH_READY                /* Define a custom attribute to `lv_flush_ready` function */
 #define LV_COMPILER_VLA_SUPPORTED            1  /* 1: Variable length array is supported*/
 #define LV_COMPILER_NON_CONST_INIT_SUPPORTED 1  /* 1: Initialization with non constant values are supported */
 
@@ -175,6 +176,7 @@
  *==================*/
 #define LV_OBJ_FREE_NUM_TYPE    uint32_t    /*Type of free number attribute (comment out disable free number)*/
 #define LV_OBJ_FREE_PTR         1           /*Enable the free pointer attribute*/
+#define LV_OBJ_REALIGN          1           /*Enable `lv_obj_realaign()` based on `lv_obj_align()` parameters*/
 
 /*==================
  *  LV OBJ X USAGE
@@ -225,6 +227,12 @@
 #define LV_TABVIEW_ANIM_TIME    300     /*Time of slide animation [ms] (0: no animation)*/
 #endif
 
+/*Tileview (dependencies: lv_page) */
+#define USE_LV_TILEVIEW    1
+#if USE_LV_TILEVIEW
+#define LV_TILEVIEW_ANIM_TIME   300     /*Time of slide animation [ms] (0: no animation)*/
+#endif
+
 /*************************
  * Data visualizer objects
  *************************/
@@ -262,6 +270,7 @@
 #if USE_LV_PRELOAD != 0
 #define LV_PRELOAD_DEF_ARC_LENGTH   60      /*[deg]*/
 #define LV_PRELOAD_DEF_SPIN_TIME    1000    /*[ms]*/
+#define LV_PRELOAD_DEF_ANIM         LV_PRELOAD_TYPE_SPINNING_ARC
 #endif
 
 /*************************
@@ -276,6 +285,9 @@
 
 /*Image Button (dependencies: lv_btn*/
 #define USE_LV_IMGBTN   1
+#if USE_LV_IMGBTN
+#define LV_IMGBTN_TILED 1           /*1: The imgbtn requires left, mid and right parts and the width can be set freely*/
+#endif
 
 /*Button matrix (dependencies: -)*/
 #define USE_LV_BTNM     1
@@ -292,7 +304,7 @@
 #define LV_LIST_FOCUS_TIME  100 /*Default animation time of focusing to a list element [ms] (0: no animation)  */
 #endif
 
-/*Drop down list (dependencies: lv_page, lv_label)*/
+/*Drop down list (dependencies: lv_page, lv_label, lv_symbol_def.h)*/
 #define USE_LV_DDLIST    1
 #if USE_LV_DDLIST != 0
 #define LV_DDLIST_ANIM_TIME     200     /*Open and close default animation time [ms] (0: no animation)*/

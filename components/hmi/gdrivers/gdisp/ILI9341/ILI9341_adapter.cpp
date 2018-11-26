@@ -26,7 +26,6 @@
 /* SPI Includes */
 #include "ILI9341.h"
 #include "iot_lcd.h"
-#include "lcd_adapter.h"
 
 /* System Includes */
 #include "esp_log.h"
@@ -76,14 +75,7 @@ static CEspLcdAdapter *lcd_obj = NULL;
 
 void board_lcd_flush(int16_t x, int16_t y, const uint16_t *bitmap, int16_t w, int16_t h)
 {
-#if CONFIG_UGFX_DRIVER_AUTO_FLUSH_ENABLE
-    flush_width = w;
-    flush_height = h;
-    lcd_obj->pFrameBuffer = bitmap;
-    xSemaphoreGive(flush_sem);
-#else
     lcd_obj->drawBitmap(x, y, bitmap, w, h);
-#endif
 }
 
 void board_lcd_blit_area(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h)
@@ -168,12 +160,14 @@ void ex_disp_flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2, const lv_colo
 void ex_disp_fill(int32_t x1, int32_t y1, int32_t x2, int32_t y2, lv_color_t color)
 {
     lcd_obj->fillRect((int16_t)x1, (int16_t)y1, (int16_t)(x2 - x1 + 1), (int16_t)(y2 - y1 + 1), (uint16_t)color.full);
+    lv_flush_ready();
 }
 
 /*Write pixel map (e.g. image) to the display*/
 void ex_disp_map(int32_t x1, int32_t y1, int32_t x2, int32_t y2, const lv_color_t *color_p)
 {
     lcd_obj->drawBitmap((int16_t)x1, (int16_t)y1, (const uint16_t *)color_p, (int16_t)(x2 - x1 + 1), (int16_t)(y2 - y1 + 1));
+    lv_flush_ready();
 }
 
 lv_disp_drv_t lvgl_lcd_display_init()
